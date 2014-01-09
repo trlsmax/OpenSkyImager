@@ -1,5 +1,5 @@
 CC = gcc `pkg-config --cflags glib-2.0 gtk+-2.0  cfitsio libusb-1.0`
-CFLAGS = -Wall
+CFLAGS = -g -Wall
 
 LIBS = `pkg-config --libs glib-2.0 gtk+-2.0 cfitsio libusb-1.0` -lrt -lm
 

@@ -843,6 +843,16 @@ gpointer thd_capture_run(gpointer thd_data)
 	}
 	while ((thdrun == 1) && (thderror == 0))
 	{
+        if (shots == ((struct script_parameter *)script_parameter_list->data)->start_from) {
+            g_rw_lock_writer_lock(&thd_caplock);
+            imgcam_get_expar()->time = ((struct script_parameter *)script_parameter_list->data)->exposure;
+            imgcam_get_expar()->bin = ((struct script_parameter *)script_parameter_list->data)->bin;
+            imgcam_get_expar()->gain = ((struct script_parameter *)script_parameter_list->data)->gain;
+            imgcam_get_expar()->offset = ((struct script_parameter *)script_parameter_list->data)->offset;
+            imgcam_get_expar()->edit = 1;
+            g_rw_lock_writer_unlock(&thd_caplock);
+            script_parameter_list = g_slist_delete_link(script_parameter_list, script_parameter_list);
+        }
 		// To ensure the "sh(oot)" copy of the ex(posure) params is done clean
 		if ((tecrun == 1) && (imgcam_get_tecp()->istec == 2))
 		{

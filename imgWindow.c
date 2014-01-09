@@ -1048,6 +1048,8 @@ void box_filename_build()
 
 void box_script_build()
 {
+    GtkTextBuffer *output = NULL;
+
 	box_scripting = gtk_table_new(15, 3, FALSE);
 	gtk_table_set_row_spacings(GTK_TABLE(box_scripting), 4);
 	gtk_table_set_col_spacings(GTK_TABLE(box_scripting), 4);
@@ -1085,34 +1087,9 @@ void box_script_build()
 	gtk_widget_set_size_request(script_result, 360, 150);
     gtk_container_add(GTK_CONTAINER(scroll_result), script_result);
 	gtk_table_attach(GTK_TABLE(box_scripting),    scroll_result,  0,  3,  9,  15, GTK_FILL, GTK_FILL, 0, 0);
-#if 0
-	cmd_saveas_build();
-	cmd_audela_build();
-	cmd_iris_build();
-	cmb_fmt_build();
-	txt_fitfolder_build();
-	txt_fitbase_build();
-	cmd_dateadd_build();
-	cmd_timeadd_build();
-	cmd_fltadd_build();
-	cmb_flt_build();
-	cmd_zerofc_build();
-	cmd_tlenable_build();
-	
-	//gtk_table_attach(GTK_TABLE(box_scripting), gtk_label_new_with_align("", 0.5, 0.5), 0, 1, 0, 1, GTK_EXPAND | GTK_FILL, GTK_FILL, 0, 0);
-	gtk_table_attach(GTK_TABLE(box_scripting),    cmd_saveas,  0,  2,  1,  2, GTK_FILL, GTK_FILL, 0, 0);
-	gtk_table_attach(GTK_TABLE(box_scripting),    cmd_audela,  2,  4,  1,  2, GTK_FILL, GTK_FILL, 0, 0);
-	gtk_table_attach(GTK_TABLE(box_scripting),      cmd_iris,  4,  6,  1,  2, GTK_FILL, GTK_FILL, 0, 0);
-	gtk_table_attach(GTK_TABLE(box_scripting),       cmb_fmt,  6,  8,  1,  2, GTK_FILL, GTK_FILL, 0, 0);
-	gtk_table_attach(GTK_TABLE(box_scripting), txt_fitfolder,  0,  8,  2,  3, GTK_FILL, GTK_FILL, 0, 0);
-	gtk_table_attach(GTK_TABLE(box_scripting),   txt_fitbase,  0,  8,  3,  4, GTK_FILL, GTK_FILL, 0, 0);
-	gtk_table_attach(GTK_TABLE(box_scripting),   cmd_dateadd,  0,  2,  4,  5, GTK_FILL, GTK_FILL, 0, 0);
-	gtk_table_attach(GTK_TABLE(box_scripting),   cmd_timeadd,  2,  4,  4,  5, GTK_FILL, GTK_FILL, 0, 0);
-	gtk_table_attach(GTK_TABLE(box_scripting),    cmd_fltadd,  4,  6,  4,  5, GTK_FILL, GTK_FILL, 0, 0);
-	gtk_table_attach(GTK_TABLE(box_scripting),       cmb_flt,  6,  8,  4,  5, GTK_FILL, GTK_FILL, 0, 0);
-	gtk_table_attach(GTK_TABLE(box_scripting),    cmd_zerofc,  0,  2,  5,  6, GTK_FILL, GTK_FILL, 0, 0);
-	gtk_table_attach(GTK_TABLE(box_script),  cmd_tlenable,  0,  2,  6,  7, GTK_FILL, GTK_FILL, 0, 0);
-#endif
+
+    output = gtk_text_view_get_buffer(GTK_TEXT_VIEW(script_result));
+    gtk_text_buffer_create_tag(output, "red_bg", "background", "red", NULL);
 }
 
 void box_timelapse_build()

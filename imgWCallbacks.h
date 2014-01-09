@@ -20,6 +20,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+extern GSList *script_parameter_list;
+struct script_parameter {
+    int num;
+    int start_from;
+    int exposure;
+    int bin;
+    int gain;
+    int offset;
+};
+
 gboolean tmr_img_refresh (GtkWidget *widget);
 gboolean tmr_imgstatus_pixmsg (GtkWidget *widget);
 gboolean tmr_adu_check (GtkWidget *widget);
