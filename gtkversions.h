@@ -21,6 +21,7 @@
  */
 
 #include "glibversions.h"
+
 #if GTK_MAJOR_VERSION == 3
 	#define gtk_hscale_new_with_range(min,max,step)                 gtk_scale_new_with_range(GTK_ORIENTATION_HORIZONTAL,min,max,step)
 	#define gtk_vscale_new_with_range(min,max,step)                 gtk_scale_new_with_range(GTK_ORIENTATION_VERTICAL,min,max,step)

@@ -66,6 +66,7 @@ void imgcam_exparcpy(qhy_exposure *copy, qhy_exposure *source)
 	copy->bitpix  = source->bitpix;   // Bits  x pixel 8, 12, 16
 	copy->totsize = source->totsize;
 	copy->tsize   = source->tsize;    // Transfer size as needed for the bulk read, qhyX_setregisters will compile;
+	copy->preview = source->preview;  // 1 = Focus, 0 = capture;
 	copy->edit    = source->edit;
 }
 
@@ -536,7 +537,12 @@ int imgcam_shoot()
 		case 9:
 			if ((retval = ((shpar.edit) ? qhy9_setregisters(&shpar) : 1)) == 1)
 			{
-				retval = qhy_ccdStartExposure(shpar.time);
+				// In dark mode
+				// Close the shutter, otherwise noop
+				if ((retval = ((shpar.mode > 0) ? imgcam_shutter(1) : 1)) == 1)
+				{
+					retval = qhy_ccdStartExposure(shpar.time);
+				}
 			}
 			break;
 		case 11:
@@ -569,7 +575,12 @@ int imgcam_readout()
 		// Check if camera is good and ready thereafter
 		while (qhy_getCameraStatus() == 0)  
 		{
-			usleep(1000);  
+			usleep(1000);
+			/*if (camid == 9)
+			{
+				// Qhy9 only allow one getCamerStatus call  
+				break;
+			}*/
 		}
 	}
 	if ((allocsize != presize[curdataptr]) || (databuffer[curdataptr] == NULL))
@@ -609,6 +620,12 @@ int imgcam_readout()
 				qhy8l_decode(databuffer[curdataptr]);	
 				break;
 			case 9:
+				if (shpar.mode > 0)
+				{
+					// In dark mode
+					// Release shutter go avoid excess strain
+					imgcam_shutter(2);
+				}
 				qhy9_decode(databuffer[curdataptr]);	
 				break;
 			case 11:
