@@ -1046,6 +1046,75 @@ void box_filename_build()
 	gtk_table_attach(GTK_TABLE(box_filename),  cmd_tlenable,  0,  2,  6,  7, GTK_FILL, GTK_FILL, 0, 0);
 }
 
+void box_script_build()
+{
+	box_scripting = gtk_table_new(15, 3, FALSE);
+	gtk_table_set_row_spacings(GTK_TABLE(box_scripting), 4);
+	gtk_table_set_col_spacings(GTK_TABLE(box_scripting), 4);
+	gtk_container_set_border_width(GTK_CONTAINER(box_scripting), 4);
+	
+	script_save = gtk_button_new_with_label(C_("Scripting","Save"));
+	gtk_widget_set_size_request(script_save, 80, 30);
+	//g_signal_connect(G_OBJECT(script_save), "clicked", G_CALLBACK(script_save_click), NULL);
+	gtk_table_attach(GTK_TABLE(box_scripting),    script_save,  0,  1,  0,  1, GTK_FILL, GTK_FILL, 0, 0);
+
+	script_read = gtk_button_new_with_label(C_("Scripting","Read"));
+	gtk_widget_set_size_request(script_read, 80, 30);
+	//g_signal_connect(G_OBJECT(script_read), "clicked", G_CALLBACK(script_read_click), NULL);
+	gtk_table_attach(GTK_TABLE(box_scripting),    script_read,  1,  2,  0,  1, GTK_FILL, GTK_FILL, 0, 0);
+
+	script_apply = gtk_button_new_with_label(C_("Scripting","Apply"));
+	gtk_widget_set_size_request(script_apply, 80, 30);
+	g_signal_connect(G_OBJECT(script_apply), "clicked", G_CALLBACK(script_apply_click), NULL);
+	gtk_table_attach(GTK_TABLE(box_scripting),    script_apply,  2,  3,  0,  1, GTK_FILL, GTK_FILL, 0, 0);
+
+	gtk_table_attach(GTK_TABLE(box_scripting),gtk_label_new(C_("Scripting","Script")),  0,  3,  1,  2, GTK_FILL, GTK_FILL, 0, 0);
+    scroll_input = gtk_scrolled_window_new(NULL, NULL);
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroll_input), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+    gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scroll_input), GTK_SHADOW_ETCHED_IN);
+    script_input = gtk_text_view_new();
+	gtk_widget_set_size_request(script_input, 360, 150);
+    gtk_container_add(GTK_CONTAINER(scroll_input), script_input);
+	gtk_table_attach(GTK_TABLE(box_scripting),    scroll_input,  0,  3,  2,  8, GTK_FILL, GTK_FILL, 0, 0);
+
+	gtk_table_attach(GTK_TABLE(box_scripting),gtk_label_new(C_("Scripting","Apply result")),  0,  3,  8,  9, GTK_FILL, GTK_FILL, 0, 0);
+    scroll_result = gtk_scrolled_window_new(NULL, NULL);
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroll_result), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+    //gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scroll_result), GTK_SHADOW_ETCHED_IN);
+    script_result = gtk_text_view_new();
+	gtk_widget_set_size_request(script_result, 360, 150);
+    gtk_container_add(GTK_CONTAINER(scroll_result), script_result);
+	gtk_table_attach(GTK_TABLE(box_scripting),    scroll_result,  0,  3,  9,  15, GTK_FILL, GTK_FILL, 0, 0);
+#if 0
+	cmd_saveas_build();
+	cmd_audela_build();
+	cmd_iris_build();
+	cmb_fmt_build();
+	txt_fitfolder_build();
+	txt_fitbase_build();
+	cmd_dateadd_build();
+	cmd_timeadd_build();
+	cmd_fltadd_build();
+	cmb_flt_build();
+	cmd_zerofc_build();
+	cmd_tlenable_build();
+	
+	//gtk_table_attach(GTK_TABLE(box_scripting), gtk_label_new_with_align("", 0.5, 0.5), 0, 1, 0, 1, GTK_EXPAND | GTK_FILL, GTK_FILL, 0, 0);
+	gtk_table_attach(GTK_TABLE(box_scripting),    cmd_saveas,  0,  2,  1,  2, GTK_FILL, GTK_FILL, 0, 0);
+	gtk_table_attach(GTK_TABLE(box_scripting),    cmd_audela,  2,  4,  1,  2, GTK_FILL, GTK_FILL, 0, 0);
+	gtk_table_attach(GTK_TABLE(box_scripting),      cmd_iris,  4,  6,  1,  2, GTK_FILL, GTK_FILL, 0, 0);
+	gtk_table_attach(GTK_TABLE(box_scripting),       cmb_fmt,  6,  8,  1,  2, GTK_FILL, GTK_FILL, 0, 0);
+	gtk_table_attach(GTK_TABLE(box_scripting), txt_fitfolder,  0,  8,  2,  3, GTK_FILL, GTK_FILL, 0, 0);
+	gtk_table_attach(GTK_TABLE(box_scripting),   txt_fitbase,  0,  8,  3,  4, GTK_FILL, GTK_FILL, 0, 0);
+	gtk_table_attach(GTK_TABLE(box_scripting),   cmd_dateadd,  0,  2,  4,  5, GTK_FILL, GTK_FILL, 0, 0);
+	gtk_table_attach(GTK_TABLE(box_scripting),   cmd_timeadd,  2,  4,  4,  5, GTK_FILL, GTK_FILL, 0, 0);
+	gtk_table_attach(GTK_TABLE(box_scripting),    cmd_fltadd,  4,  6,  4,  5, GTK_FILL, GTK_FILL, 0, 0);
+	gtk_table_attach(GTK_TABLE(box_scripting),       cmb_flt,  6,  8,  4,  5, GTK_FILL, GTK_FILL, 0, 0);
+	gtk_table_attach(GTK_TABLE(box_scripting),    cmd_zerofc,  0,  2,  5,  6, GTK_FILL, GTK_FILL, 0, 0);
+	gtk_table_attach(GTK_TABLE(box_script),  cmd_tlenable,  0,  2,  6,  7, GTK_FILL, GTK_FILL, 0, 0);
+#endif
+}
+
 void box_timelapse_build()
 {
 	time_t localt;
@@ -1209,7 +1278,8 @@ void tab_settings_build()
 	box_cooling_build();
 	box_filename_build();
 	box_timelapse_build();
-	box_scripting = gtk_vbox_new(FALSE, 4);
+    box_script_build();
+	//box_scripting = gtk_vbox_new(FALSE, 4);
 	box_header    = gtk_vbox_new(FALSE, 4);
 	box_cfw_build();
 	box_calc      = gtk_vbox_new(FALSE, 4);

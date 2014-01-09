@@ -85,6 +85,10 @@
 	GdkPixbuf *tecpixbuf = NULL;
 	GdkPixbuf *icopixbuf = NULL;
 	
+    GtkWidget *script_save, *script_read, *script_apply;
+    GtkWidget *scroll_input, *scroll_result;
+    GtkWidget *script_input, *script_result;
+
 	//Threads
 	GThread *thd_capture = NULL;
 	#if GLIB_MINOR_VERSION >= 32
@@ -182,6 +186,10 @@
 	extern GdkPixbuf *tecpixbuf;
 	extern GdkPixbuf *icopixbuf;
 	
+    extern GtkWidget *script_save, *script_read, *script_apply;
+    extern GtkWidget *scroll_input, *scroll_result;
+    extern GtkWidget *script_input, *script_result;
+
 	//Threads
 	extern GThread *thd_capture;
 	#if GLIB_MINOR_VERSION >= 32

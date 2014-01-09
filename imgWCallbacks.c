@@ -2456,3 +2456,58 @@ void cmd_cfwwhl_click (GtkComboBox *widget, gpointer user_data)
 	gtk_statusbar_write(GTK_STATUSBAR(imgstatus), 0, imgmsg);
 }
 
+
+void script_apply_click(GtkWidget *widget, gpointer data)
+{
+    #define BUF_SIZE 100
+    int i, j, line_cnt;
+    gint num, exposure, bin, gain, offset;
+    GtkTextBuffer *input=NULL, *output = NULL;
+    GtkTextIter iter;
+    GtkTextIter iter_start, iter_end;
+    gchar *tmp_buf, script[BUF_SIZE], *ptr, *script_ptr;
+
+    output = gtk_text_view_get_buffer(GTK_TEXT_VIEW(script_result));
+    gtk_text_buffer_create_tag(output, "imarg", "left_margin", 5, NULL);
+    gtk_text_buffer_create_tag(output, "red_bg", "background", "red", NULL);
+    gtk_text_buffer_get_iter_at_offset(output, &iter, 0);
+
+    /* clear the text buffer */
+    gtk_text_buffer_bounds(output, &iter_start, &iter_end);
+    gtk_text_buffer_delete(output, &iter_start, &iter_end);
+
+    input = gtk_text_view_get_buffer(GTK_TEXT_VIEW(script_input));
+    line_cnt = gtk_text_buffer_get_line_count(input);
+    //printf("line count is %d\n", line_cnt);
+
+    for (i = 0; i < line_cnt; i++) {
+        gtk_text_buffer_get_iter_at_line(input, &iter_start, i);
+        if (i+1 == line_cnt)
+            gtk_text_buffer_get_end_iter(input, &iter_end);
+        else
+            gtk_text_buffer_get_iter_at_line(input, &iter_end, i+1);
+        tmp_buf = gtk_text_buffer_get_text(input, &iter_start, &iter_end, FALSE);
+
+        ptr = tmp_buf;
+        script_ptr = script;
+
+        for (j = 0; j < BUF_SIZE && *ptr != '\0'; j++, ptr++)
+            if ((*ptr >= '0' && *ptr <= '9') || (*ptr == ','))
+                *(script_ptr++) = *ptr;
+        *script_ptr = '\0';
+
+        if (script[0] == '\0') {
+            continue;
+        } else if (sscanf(script, "%d,%d,%d,%d,%d", &num, &exposure, &bin, &gain, &offset) == 5) {
+            gtk_text_buffer_insert(output, &iter, script, -1);
+            gtk_text_buffer_insert(output, &iter, "\n", -1);
+            printf("%d,%d,%d,%d,%d", num, exposure, bin, gain, offset);
+        } else {
+            gtk_text_buffer_insert_with_tags_by_name(output, &iter, "Line error\n", -1, "red_bg", NULL);
+        }
+        printf("%s", script);
+    }
+
+    /*gtk_text_buffer_insert_with_tags_by_name(output, &iter, "color text\n", -1, "red_bg", NULL);
+    printf("Hello World !\n");*/
+}
