@@ -781,6 +781,7 @@ gpointer thd_capture_run(gpointer thd_data)
 	GThread *thd_pixbuf = NULL;
 	GThread *thd_fitsav = NULL;
 	GThread *thd_avisav = NULL;
+    GSList *list_ptr;
 
 	gettimeofday(&clks, NULL);
 	g_rw_lock_reader_lock(&thd_caplock);
@@ -841,17 +842,25 @@ gpointer thd_capture_run(gpointer thd_data)
 		}
 		tmrtecrefresh = g_timeout_add(1, (GSourceFunc) tmr_tecstatus_write, NULL);			
 	}
+
+    list_ptr = script_parameter_list;
 	while ((thdrun == 1) && (thderror == 0))
 	{
-        if (shots == ((struct script_parameter *)script_parameter_list->data)->start_from) {
-            g_rw_lock_writer_lock(&thd_caplock);
-            imgcam_get_expar()->time = ((struct script_parameter *)script_parameter_list->data)->exposure;
-            imgcam_get_expar()->bin = ((struct script_parameter *)script_parameter_list->data)->bin;
-            imgcam_get_expar()->gain = ((struct script_parameter *)script_parameter_list->data)->gain;
-            imgcam_get_expar()->offset = ((struct script_parameter *)script_parameter_list->data)->offset;
-            imgcam_get_expar()->edit = 1;
-            g_rw_lock_writer_unlock(&thd_caplock);
-            script_parameter_list = g_slist_delete_link(script_parameter_list, script_parameter_list);
+        if (list_ptr != NULL) {
+            if (shots == ((struct script_parameter *)list_ptr->data)->start_from) {
+                g_rw_lock_writer_lock(&thd_caplock);
+                imgcam_get_expar()->time = ((struct script_parameter *)list_ptr->data)->exposure;
+                printf("time = %d ", imgcam_get_expar()->time);
+                imgcam_get_expar()->bin = ((struct script_parameter *)list_ptr->data)->bin;
+                printf("bin = %d ", imgcam_get_expar()->bin);
+                imgcam_get_expar()->gain = ((struct script_parameter *)list_ptr->data)->gain;
+                printf("gain = %d ", imgcam_get_expar()->gain);
+                imgcam_get_expar()->offset = ((struct script_parameter *)list_ptr->data)->offset;
+                printf("offset = %d\n", imgcam_get_expar()->offset);
+                imgcam_get_expar()->edit = 1;
+                g_rw_lock_writer_unlock(&thd_caplock);
+                list_ptr = list_ptr->next;
+            }
         }
 		// To ensure the "sh(oot)" copy of the ex(posure) params is done clean
 		if ((tecrun == 1) && (imgcam_get_tecp()->istec == 2))
@@ -1152,6 +1161,13 @@ gpointer thd_capture_run(gpointer thd_data)
 			thderror = 1;
 		}
 	} // While end
+
+    if(script_parameter_list != NULL) {
+        g_slist_free_full(script_parameter_list, g_free);
+        script_parameter_list = NULL;
+        gtk_spin_button_set_value(GTK_SPIN_BUTTON(spn_expnum), 1);
+    }
+
 	g_rw_lock_reader_lock(&thd_caplock);
 	thdrun = run;
 	g_rw_lock_reader_unlock(&thd_caplock);		

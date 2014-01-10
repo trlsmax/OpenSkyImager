@@ -26,6 +26,7 @@
 #include <fitsio.h>
 #include "imgBase.h"
 #include "imgFitsio.h"
+#include "imgCamio.h"
 
 static unsigned char *databuffer = NULL;
 static int status = 0;
@@ -258,13 +259,14 @@ int imgfit_save_file(char *filename)
 		{
 			fits_create_img(ofptr, bitpix, naxes, naxis, &status);
 			// Header update must go here
-			//fits_update_key(fptr, TSTRING, "SOFTWARE", PROGNAME,"", &status);
-			//fits_update_key(fptr, TSTRING, "CAMERA", CAMERANAME,"", &status);
-			//fits_update_key(fptr, TLONG,   "GAIN", &gain,"", &status);
-			//fits_update_key(fptr, TLONG,   "OFFSET", &offset,"", &status);
-			//fits_update_key(fptr, TLONG,   "AMP", &amp,"", &status);
-			//fits_update_key(fptr, TLONG,   "EXPOSURE", &exposuretime, "Total Exposure Time", &status);
-			//fits_update_key(fptr, TDOUBLE, "SENSTEMP", &temp, "Sensor temperature", &status);
+			fits_update_key(ofptr, TSTRING, "SOFTWARE", APPNAM,"", &status);
+			fits_update_key(ofptr, TSTRING, "CAMERA", imgcam_get_model(),"", &status);
+			fits_update_key(ofptr, TLONG,   "BIN", &(imgcam_get_shpar()->bin),"", &status);
+			fits_update_key(ofptr, TLONG,   "GAIN", &(imgcam_get_shpar()->gain),"", &status);
+			fits_update_key(ofptr, TLONG,   "OFFSET", &(imgcam_get_shpar()->offset),"", &status);
+			fits_update_key(ofptr, TLONG,   "AMP", &(imgcam_get_shpar()->amp),"", &status);
+			fits_update_key(ofptr, TLONG,   "EXPOSURE", &(imgcam_get_shpar()->time), "Total Exposure Time", &status);
+			fits_update_key(ofptr, TDOUBLE, "SENSTEMP", &(imgcam_get_tecp()->tectemp), "Sensor temperature", &status);
 			//
 			fits_write_img(ofptr, datatype, 1, (naxis[0] * naxis[1]), databuffer, &status);
 			fits_close_file(ofptr, &status);

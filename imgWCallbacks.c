@@ -2166,5 +2166,6 @@ void script_apply_click(GtkWidget *widget, gpointer data)
         g_rw_lock_writer_lock(&thd_caplock);
         expnum = total;
         g_rw_lock_writer_unlock(&thd_caplock);
+        gtk_spin_button_set_value(GTK_SPIN_BUTTON(spn_expnum), expnum);
     }
 }
