@@ -634,6 +634,11 @@ void txt_fitfolder_build()
 	gtk_widget_set_size_request(txt_fitfolder, 560, 30);
 	//Callbacks
 	g_signal_connect(G_OBJECT(txt_fitfolder), "changed", G_CALLBACK(txt_fitfolder_changed),  NULL);
+
+    //for select a folder
+    fd_btn = gtk_file_chooser_button_new(_("select a folder"), GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER);
+    gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(fd_btn), g_get_home_dir());
+	g_signal_connect(G_OBJECT(fd_btn), "selection_changed", G_CALLBACK(fd_btn_clicked), NULL);
 }
 
 void txt_fitbase_build()
@@ -966,6 +971,7 @@ void box_ccd_build()
 	cmb_denoise_build();
 	cmb_depth_build();
 	cmb_debayer_build();
+	cmb_dither_build();
 	
 	// MP mode label
 	lbl_mode = gtk_label_new_with_align("", 0.0, 0.5, 70, 30);
@@ -1015,6 +1021,8 @@ void box_ccd_build()
 	gtk_table_attach(GTK_TABLE(box_ccd), gtk_hseparator_new(), 0, 6, 12, 13, GTK_FILL, GTK_FILL, 0, 0);
 	gtk_table_attach(GTK_TABLE(box_ccd), gtk_label_new_with_align(C_("settings","Color mode"), 0.0, 0.5, 70, 30), 0, 3, 13, 14, GTK_FILL, GTK_FILL, 0, 0);
 	gtk_table_attach(GTK_TABLE(box_ccd), cmb_debayer, 3, 6, 13, 14, GTK_FILL, GTK_FILL, 0, 0);
+	gtk_table_attach(GTK_TABLE(box_ccd), gtk_label_new_with_align(C_("settings","Dither"), 0.0, 0.5, 70, 30), 0, 3, 14, 15, GTK_FILL, GTK_FILL, 0, 0);
+	gtk_table_attach(GTK_TABLE(box_ccd), cmb_dither, 3, 6, 14, 15, GTK_FILL, GTK_FILL, 0, 0);
 }
 
 void box_cooling_build()
@@ -1077,7 +1085,8 @@ void box_filename_build()
 	gtk_table_attach(GTK_TABLE(box_filename),    cmd_audela,  2,  4,  1,  2, GTK_FILL, GTK_FILL, 0, 0);
 	gtk_table_attach(GTK_TABLE(box_filename),      cmd_iris,  4,  6,  1,  2, GTK_FILL, GTK_FILL, 0, 0);
 	gtk_table_attach(GTK_TABLE(box_filename),       cmb_fmt,  6,  8,  1,  2, GTK_FILL, GTK_FILL, 0, 0);
-	gtk_table_attach(GTK_TABLE(box_filename), txt_fitfolder,  0,  8,  2,  3, GTK_FILL, GTK_FILL, 0, 0);
+	gtk_table_attach(GTK_TABLE(box_filename), txt_fitfolder,  0,  6,  2,  3, GTK_FILL, GTK_FILL, 0, 0);
+	gtk_table_attach(GTK_TABLE(box_filename), fd_btn,  7,  8,  2,  3, GTK_FILL, GTK_FILL, 0, 0);
 	gtk_table_attach(GTK_TABLE(box_filename),   txt_fitbase,  0,  8,  3,  4, GTK_FILL, GTK_FILL, 0, 0);
 	gtk_table_attach(GTK_TABLE(box_filename),   cmd_dateadd,  0,  2,  4,  5, GTK_FILL, GTK_FILL, 0, 0);
 	gtk_table_attach(GTK_TABLE(box_filename),   cmd_timeadd,  2,  4,  4,  5, GTK_FILL, GTK_FILL, 0, 0);
@@ -1484,3 +1493,13 @@ gpointer fiforead ()
 	return fiforeadcb;
 }
 
+void cmb_dither_build()
+{
+	cmb_dither = gtk_combo_box_text_new();
+	gtk_widget_set_size_request(cmb_dither, 50, 30);
+	gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(cmb_dither), C_("settings","None"));
+	gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(cmb_dither), "Lin_guider");
+	gtk_combo_box_set_active(GTK_COMBO_BOX(cmb_dither), 0);
+	
+	g_signal_connect(G_OBJECT(cmb_dither), "changed", G_CALLBACK(cmb_dither_changed),  NULL);
+}

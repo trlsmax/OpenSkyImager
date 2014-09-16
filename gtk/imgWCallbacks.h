@@ -107,3 +107,6 @@ void cmd_cfwrst_click(GtkWidget *widget, gpointer data);
 void cmb_cfwwhl_changed (GtkComboBox *widget, GtkWidget **awidget);
 void cmd_cfwwhl_click (GtkComboBox *widget, gpointer user_data);
 gboolean fiforeadcb (GIOChannel *gio, GIOCondition condition, gpointer data);
+
+void fd_btn_clicked(GtkWidget *widget, gpointer data);
+void cmb_dither_changed(GtkComboBox *widget, gpointer data);

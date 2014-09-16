@@ -4097,3 +4097,26 @@ gboolean fiforeadcb (GIOChannel *gch, GIOCondition condition, gpointer data)
 	return TRUE;
 }
 
+
+void fd_btn_clicked(GtkWidget *widget, gpointer data)
+{
+    gchar *selected_fd = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(widget));
+    printf("%s\n", selected_fd);
+    gtk_entry_set_text(GTK_ENTRY(txt_fitfolder), selected_fd);
+}
+
+int dither = 0;
+#define NONE 0
+#define LIN_GUIDER 1
+void cmb_dither_changed(GtkComboBox *widget, gpointer data)
+{
+	g_rw_lock_writer_lock(&thd_caplock);
+	if (gtk_combo_box_get_active(GTK_COMBO_BOX(widget)) != -1)
+	{
+		if (strcmp(gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(widget)), "Lin_guider") == 0)
+            dither = LIN_GUIDER;
+        else
+            dither = NONE;
+    }
+	g_rw_lock_writer_unlock(&thd_caplock);
+}

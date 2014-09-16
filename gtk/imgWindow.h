@@ -76,6 +76,12 @@
 
 #ifdef DECLARE_WINDOW
 
+    //for select a folder
+    GtkWidget *fd_btn;
+    //for dither with guiding software
+    GtkWidget *cmb_dither;
+    void cmb_dither_build();
+
 	// Decorations
 	#if GTK_MAJOR_VERSION == 3
 	GdkRGBA clrSelected = { 0.050966005, 0.62745098, 0.784313725, 1.0 };   //Blue based

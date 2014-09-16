@@ -30,9 +30,95 @@
 #include "imgWFuncs.h"
 #include "imgWCallbacks.h"
 #include <sys/time.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/un.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <stdint.h>
 
 static int intTrue  = 1;
 static int intFalse = 0;
+
+//for Dither
+extern int dither;
+#define HDR_SZ 8
+#define NONE 0
+#define LIN_GUIDER 1
+
+void dither_lg(void)
+{
+	int sockfd, servlen;
+	struct sockaddr_un  serv_addr;
+	char readbuf[16384];
+
+	bzero((char *)&serv_addr,sizeof(serv_addr));
+	serv_addr.sun_family = AF_UNIX;
+	strcpy(serv_addr.sun_path, "/tmp/lg_ss");
+	servlen = strlen(serv_addr.sun_path) + sizeof(serv_addr.sun_family);
+	if( (sockfd = socket(AF_UNIX, SOCK_STREAM,0)) < 0 ) {
+		printf("Error Creating socket\n");
+		gtk_statusbar_write(GTK_STATUSBAR(imgstatus), 0, C_("main","Error Creating socket"));
+        return;
+    }
+
+	if( connect(sockfd, (struct sockaddr *)&serv_addr, servlen) < 0 ) {
+		printf("Error Connecting to Lin_guider\n");
+		gtk_statusbar_write(GTK_STATUSBAR(imgstatus), 0, C_("main","Error Connecting to Lin_guider"));
+        return;
+    }
+
+	printf("Connected to Lin_guider\n");
+    gtk_statusbar_write(GTK_STATUSBAR(imgstatus), 0, C_("main","Connected to Lin_guider"));
+
+    char out[256];
+    uint16_t *ptr16 = (uint16_t *)out;
+    uint32_t *ptr32 = (uint32_t *)out;
+
+    ptr16[0] = 2;	// SIGNATURE
+    ptr16[1] = 4;		// DITHER CMD
+    ptr32[1] = 0;	// NO DATA
+
+    {
+        int n = 0;
+        n = write( sockfd, out, 8 );
+        if( n < 0 ) {
+            printf("ERROR writing to socket");
+            gtk_statusbar_write(GTK_STATUSBAR(imgstatus), 0, C_("main","Error writing to socket"));
+            return;
+        }
+        printf("Wrote\n");
+    }
+
+    {
+        int pos = 0;
+        int n = 0;
+        int to_read = HDR_SZ;
+        do
+        {
+            n = read( sockfd, readbuf+pos, to_read );
+            pos += n;
+            if( n == to_read )
+            {
+                int data_sz = ((uint32_t*)(readbuf+4))[0];
+                printf("answer data size = %d\n", data_sz);
+                if( data_sz < 0 || data_sz > 16000 ) {
+                    printf("ERROR length to read");
+                    gtk_statusbar_write(GTK_STATUSBAR(imgstatus), 0, C_("main","Error length to read"));
+                    return;
+                }
+                to_read += data_sz;
+            }
+        }while( pos < to_read );
+        printf("The return message was '%.*s'\n", ((uint32_t*)(readbuf+4))[0], readbuf+HDR_SZ);
+        gtk_statusbar_write(GTK_STATUSBAR(imgstatus), 0, ((gchar *)(readbuf+4)));
+    }
+	printf("=== dither done ===\n");
+	//sleep(2);
+	close(sockfd);
+}
 
 void fithdr_init(fit_rowhdr *hdr, int hdrsz)
 {
@@ -1487,6 +1573,11 @@ gpointer thd_capture_run(gpointer thd_data)
 				}
 				tmrcapprgrefresh = g_timeout_add(1, (GSourceFunc) tmr_capture_progress_refresh, (thdreadok == 1) ? &intTrue : &intFalse);
 			}
+
+            //for dither
+            if (dither == LIN_GUIDER)
+                dither_lg();
+
 			// Determine if loop has to stop
 			g_rw_lock_reader_lock(&thd_caplock);
 			thdmode = capture;
